@@ -23,9 +23,7 @@ var (
 	influx_db = "torque"
 	influx_pass = "xxx"
 
-	//dict_file = "torque_keys.csv"
-	cwd_dir = filepath.Abs(filepath.Dir(os.Args[0]))
-	log_file = cwd_dir + "/" + "torque_server.log"
+	log_file = "torque_server.log"
 
 	mandatory_args = []string{"v", "session", "id", "time"}
 	dict = prepare_dict()
@@ -34,7 +32,14 @@ var (
 
 func main() {
 	// preparing logfile
-	f, err := os.OpenFile(log_file, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0600)
+	ex, err := os.Executable()
+        if err != nil {
+          panic(err)
+        }
+        exPath := filepath.Dir(ex)
+        fmt.Println(exPath)
+
+	f, err := os.OpenFile(exPath + "/" + log_file, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0600)
 	if err != nil {
 		log.Fatalf("error opening log_file: %v", err)
 	}
