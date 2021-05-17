@@ -23,7 +23,7 @@ var (
 	influx_db = "torque"
 	influx_pass = "xxx"
 
-	dict_file = "torque_keys.csv"
+	//dict_file = "torque_keys.csv"
 	log_file = "/var/log/torque_server.log"
 
 	mandatory_args = []string{"v", "session", "id", "time"}
@@ -62,7 +62,7 @@ func read_file(path string) ([]string, error) {
 }
 
 func prepare_dict() map[string]string {
-	abs_path, _ := filepath.Abs(dict_file)
+	abs_path, _ := filepath.Abs(os.Args[1])
 	lines, err := read_file(abs_path)
 	if err != nil {
 		log.Fatalf("Error preparing dict: %s", err)
