@@ -24,7 +24,8 @@ var (
 	influx_pass = "xxx"
 
 	//dict_file = "torque_keys.csv"
-	log_file = "torque_server.log"
+	cwd_dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	log_file = cwd_dir + "/" + "torque_server.log"
 
 	mandatory_args = []string{"v", "session", "id", "time"}
 	dict = prepare_dict()
