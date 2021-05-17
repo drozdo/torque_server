@@ -24,7 +24,7 @@ var (
 	influx_pass = "xxx"
 
 	//dict_file = "torque_keys.csv"
-	log_file = "/var/log/torque_server.log"
+	log_file = "torque_server.log"
 
 	mandatory_args = []string{"v", "session", "id", "time"}
 	dict = prepare_dict()
