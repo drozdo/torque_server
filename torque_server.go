@@ -17,11 +17,11 @@ import (
 )
 
 var (
-	influx_host = "localhost"
-	influx_port = "8086"
-	influx_user = "torque"
-	influx_db = "torque"
-	influx_pass = "xxx"
+	influx_host = os.Getenv("DB_HOST")
+	influx_port = os.Getenv("DB_PORT")
+	influx_user = os.Getenv("DB_USER")
+	influx_db = os.Getenv("DB_NAME")
+	influx_pass = os.Getenv("DB_PASS")
 
 	log_file = "torque_server.log"
 
