@@ -80,6 +80,7 @@ func prepare_dict() map[string]string {
 		out[strings.ToLower(split[0])] = split[1]
 		//fmt.Println(i, line, split)
 	}
+  fmt.Println("Dict loaded")
 	return out
 }
 
@@ -94,13 +95,15 @@ func influx_connect() (client.Client, error) {
 		log.Fatal("Error creating InfluxDB Client: ", err.Error())
 	}
 	defer c.Close()
+  fmt.Println("Connected to InfluxDB")
 	return c, err
 }
 
 func handle_add(w http.ResponseWriter, req *http.Request) {
 	// Check params
 	start := time.Now()
-	for i:= 0; i < len(mandatory_args); i++ {
+  fmt.Println("Processing /add")
+  for i:= 0; i < len(mandatory_args); i++ {
 		query := req.FormValue(mandatory_args[i])
 		if query == "" {
 			http.Error(w, "missing " + mandatory_args[i] + " URL parameter", http.StatusBadRequest)
@@ -112,6 +115,7 @@ func handle_add(w http.ResponseWriter, req *http.Request) {
 
 	//fmt.Println(dict)
 
+  fmt.Println("Preparing metadata")
 	influx_measurement := "data"
 	u, _ := url.Parse(fmt.Sprintf("%s",req.URL))
 	m, _ := url.ParseQuery(strings.ToLower(u.RawQuery))
@@ -130,6 +134,7 @@ func handle_add(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+  fmt.Println("Parsing payload")
 	data := make(map[string]interface{})
 	for k, v := range m {
 		// skip non-data elements
@@ -162,19 +167,21 @@ func handle_add(w http.ResponseWriter, req *http.Request) {
 		} else {
 			data[key] = v[0]
 		}
-		//fmt.Println(k + " -> " + v[0] + " : " + dict[k])
+		fmt.Println(k + " -> " + v[0] + " : " + dict[k])
 	}
 
-	//fmt.Println(data)
+	fmt.Println(data)
 
 	// adjust time
-	i, err := strconv.ParseInt(m["time"][0] + "000000", 10, 64)
+  fmt.Println("Adjust time")
+  i, err := strconv.ParseInt(m["time"][0] + "000000", 10, 64)
 	if err != nil {
 		panic(err)
 	}
 	tm := time.Unix(0, i)
 
 	// Create a new point batch
+  fmt.Println("Create new point batch")
 	bp, _ := client.NewBatchPoints(client.BatchPointsConfig{
 		Database:  influx_db,
 		Precision: "ms",
@@ -188,9 +195,11 @@ func handle_add(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, "Error creating InfluxDB Point: " + err.Error(), http.StatusInternalServerError)
 		log.Printf("%s %s %s %s %s '%s'", req.RemoteAddr, req.Method, req.URL, "500", duration, "Error creating InfluxDB Point: " + err.Error())
 	}
+  fmt.Println("Add point to batch")
 	bp.AddPoint(pt)
 
 	// Write the batch
+  fmt.Println("Write point batch")
 	if err := influx.Write(bp); err != nil {
 		duration := time.Since(start)
 		http.Error(w, "Error writing data to InfluxDB", http.StatusInternalServerError)
