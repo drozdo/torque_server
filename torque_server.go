@@ -37,7 +37,7 @@ func main() {
           panic(err)
         }
         exPath := filepath.Dir(ex)
-        fmt.Println(exPath)
+//        fmt.Println(exPath)
 
 	f, err := os.OpenFile(exPath + "/" + log_file, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0600)
 	if err != nil {
